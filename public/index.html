@@ -741,7 +741,7 @@
     <script>
         // Configuration
         const API_BASE = ''; // Self-hosted on Vercel - no ngrok needed
-        const REFRESH_INTERVAL = 300000; // 5 minutes
+        const REFRESH_INTERVAL = 30000; // 30 seconds - 75% of DexScreener rate limit
         const MAX_SLOTS = 20;
         const FETCH_HEADERS = {
             'Accept': 'application/json'
@@ -1728,7 +1728,7 @@
                                 }
                             }
                         }
-                        await new Promise(r => setTimeout(r, 250)); // Rate limit
+                        await new Promise(r => setTimeout(r, 100)); // Faster polling // Rate limit
                     } catch (e) {
                         console.log(`DexScreener fetch failed for ${coin.symbol}`);
                     }
@@ -2093,7 +2093,7 @@
                     }
                     
                     // Small delay to not hammer API
-                    await new Promise(r => setTimeout(r, 300));
+                    await new Promise(r => setTimeout(r, 100)); // Faster discovery
                     
                 } catch (e) {
                     console.log(`DexScreener search failed for "${term}":`, e);
@@ -2150,7 +2150,7 @@
                                         }
                                     }
                                 }
-                                await new Promise(r => setTimeout(r, 200));
+                                await new Promise(r => setTimeout(r, 100)); // Faster
                             } catch (e) {}
                         }
                     }
