@@ -1,0 +1,2354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moltbook Alpha Tracker - 20 Coin Experiment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a14;
+            --bg-secondary: #12121f;
+            --bg-card: #1a1a2e;
+            --bg-card-hover: #242442;
+            --border: #2a2a4a;
+            --gold: #f0b90b;
+            --gold-dim: #a78608;
+            --green: #00d68f;
+            --green-dim: #00a86b;
+            --red: #ff4757;
+            --red-dim: #cc3a47;
+            --blue: #5dade2;
+            --purple: #a855f7;
+            --cyan: #00bcd4;
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+            --text-dim: #6b7280;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, rgba(0, 188, 212, 0.02) 1px, transparent 1px),
+                linear-gradient(rgba(0, 188, 212, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, transparent 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .logo-text h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--cyan);
+        }
+
+        .logo-text p {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .live-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 214, 143, 0.1);
+            border: 1px solid var(--green);
+            padding: 0.4rem 0.8rem;
+            border-radius: 100px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--green);
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--gold);
+            background: rgba(240, 185, 11, 0.1);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            max-width: 1800px;
+            margin: 1rem auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .stat-pill .label {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .stat-pill .value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .stat-pill.green .value { color: var(--green); }
+        .stat-pill.red .value { color: var(--red); }
+        .stat-pill.gold .value { color: var(--gold); }
+        .stat-pill.cyan .value { color: var(--cyan); }
+
+        /* Main Container */
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 1rem 2rem 2rem;
+        }
+
+        /* Experiment Info */
+        .experiment-info {
+            background: linear-gradient(135deg, rgba(0, 188, 212, 0.1) 0%, rgba(93, 173, 226, 0.05) 100%);
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .experiment-info h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--cyan);
+            margin-bottom: 0.25rem;
+        }
+
+        .experiment-info p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .experiment-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            border-color: var(--cyan);
+            background: rgba(0, 188, 212, 0.1);
+        }
+
+        .btn.primary {
+            background: var(--cyan);
+            border-color: var(--cyan);
+            color: #000;
+        }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+            gap: 1rem;
+        }
+
+        /* Coin Card */
+        .coin-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .coin-card:hover {
+            border-color: var(--cyan);
+            box-shadow: 0 0 20px rgba(0, 188, 212, 0.1);
+        }
+
+        .coin-card.positive { border-left: 3px solid var(--green); }
+        .coin-card.negative { border-left: 3px solid var(--red); }
+        .coin-card.new { border-left: 3px solid var(--gold); }
+
+        .coin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-secondary);
+        }
+
+        .coin-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .coin-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dim) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.7rem;
+            color: var(--bg-primary);
+        }
+
+        .coin-name {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .coin-meta {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+        }
+
+        .coin-price {
+            text-align: right;
+        }
+
+        .coin-price .current {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .coin-price .change {
+            font-size: 0.7rem;
+        }
+
+        .coin-price .change.up { color: var(--green); }
+        .coin-price .change.down { color: var(--red); }
+
+        /* Chart Area */
+        .chart-area {
+            height: 200px;
+            position: relative;
+            padding: 0.5rem;
+            background: #0a0a12;
+        }
+        
+        .chart-area::after {
+            content: '🖱️ Scroll=Zoom • Drag=Pan • DblClick=Reset';
+            position: absolute;
+            bottom: 2px;
+            right: 5px;
+            font-size: 0.5rem;
+            color: var(--text-dim);
+            opacity: 0.5;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Mention Heatmap Bar */
+        .mention-bar {
+            height: 24px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 0.5rem;
+            gap: 2px;
+        }
+
+        .mention-bar .label {
+            font-size: 0.55rem;
+            color: var(--text-dim);
+            margin-right: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .mention-segment {
+            flex: 1;
+            height: 12px;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        /* Signal Flags */
+        .signals-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+        }
+
+        .signal-flags {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .signal-flag {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .signal-flag.buy {
+            background: rgba(0, 214, 143, 0.15);
+            color: var(--green);
+            border: 1px solid rgba(0, 214, 143, 0.3);
+        }
+
+        .signal-flag.sell {
+            background: rgba(255, 71, 87, 0.15);
+            color: var(--red);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        .signal-perf {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+        }
+
+        .signal-perf.positive { color: var(--green); }
+        .signal-perf.negative { color: var(--red); }
+
+        /* Coin Stats */
+        .coin-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-primary);
+        }
+
+        .coin-stat {
+            text-align: center;
+        }
+
+        .coin-stat .label {
+            font-size: 0.55rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .coin-stat .value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        /* Empty State */
+        .empty-slot {
+            background: var(--bg-card);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dim);
+        }
+
+        .empty-slot .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+
+        .empty-slot .text {
+            font-size: 0.75rem;
+        }
+
+        /* Results Panel */
+        .results-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .results-panel h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .result-card {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .result-card .label {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .result-card .value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .result-card .value.green { color: var(--green); }
+        .result-card .value.red { color: var(--red); }
+        .result-card .value.gold { color: var(--gold); }
+
+        /* Tooltip */
+        .tooltip {
+            position: fixed;
+            display: none;
+            background: linear-gradient(135deg, rgba(26,26,46,0.98) 0%, rgba(18,18,31,0.98) 100%);
+            border: 1px solid var(--cyan);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            max-width: 280px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 1000;
+            pointer-events: none;
+            font-size: 0.75rem;
+        }
+
+        .tooltip.show { display: block; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-bar {
+                flex-direction: column;
+            }
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">📊</div>
+                <div class="logo-text">
+                    <h1>MOLTBOOK ALPHA</h1>
+                    <p>Testing: Does Moltbook buzz predict meme coin winners?</p>
+                </div>
+            </div>
+            <div class="header-status">
+                <a href="index.html" class="nav-link">← Sentinel Dashboard</a>
+                <div class="live-badge">
+                    <span class="live-dot"></span>
+                    <span>TRACKING</span>
+                </div>
+                <div id="lastUpdate" style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-dim);">
+                    Last update: --:--
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-pill cyan">
+            <div class="label">Tracking</div>
+            <div class="value" id="statTracking">0/20</div>
+        </div>
+        <div class="stat-pill green">
+            <div class="label">Winners (50%+)</div>
+            <div class="value" id="statWinners">--</div>
+        </div>
+        <div class="stat-pill red">
+            <div class="label">Losers (-50%)</div>
+            <div class="value" id="statLosers">--</div>
+        </div>
+        <div class="stat-pill gold">
+            <div class="label">Win Rate</div>
+            <div class="value" id="statWinRate">TBD</div>
+        </div>
+        <div class="stat-pill">
+            <div class="label">Avg Return</div>
+            <div class="value" id="statAvgReturn">--</div>
+        </div>
+        <div class="stat-pill">
+            <div class="label">Days Running</div>
+            <div class="value" id="statDays">0</div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="container">
+        <!-- Experiment Info -->
+        <div class="experiment-info">
+            <div>
+                <h2>🧪 EXPERIMENT PROTOCOL</h2>
+                <p>Discover tokens via Moltbook mentions (<72h old, >$1K liq) → Track price vs mention velocity → Measure correlation</p>
+            </div>
+            <div class="experiment-controls">
+                <button class="btn" onclick="exportData()">📥 Export</button>
+                <button class="btn" onclick="clearSlot()">🗑️ Remove</button>
+                <button class="btn" onclick="resetExperiment()" style="color: var(--red);">🔄 Reset All</button>
+                <button class="btn primary" onclick="forceRefresh()">⟳ Refresh Now</button>
+            </div>
+        </div>
+
+        <!-- Avg Return Chart -->
+        <div class="avg-return-panel" style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <h3 style="font-family: 'Orbitron', sans-serif; font-size: 0.9rem; color: var(--gold);">📈 AVG RETURN OVER TIME</h3>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <span id="avgReturnCurrent" style="font-family: 'JetBrains Mono', monospace; font-size: 1rem; color: var(--text-primary);">--</span>
+                    <span id="avgReturnTrend" style="font-size: 0.75rem;">--</span>
+                </div>
+            </div>
+            <div style="position: relative; height: 120px; background: var(--bg-secondary); border-radius: 8px; overflow: hidden;">
+                <canvas id="avgReturnChart" style="width: 100%; height: 100%;"></canvas>
+                <div id="avgReturnOverlay" style="position: absolute; top: 8px; left: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--text-dim);"></div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid" id="chartsGrid">
+            <!-- Populated by JS -->
+        </div>
+
+        <!-- Results Panel -->
+        <div class="results-panel">
+            <h3>📈 EXPERIMENT RESULTS & PAPER TRADING</h3>
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="label">Total Paper Trades</div>
+                    <div class="value" id="resTotalTrades">0</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">Total Invested</div>
+                    <div class="value gold" id="resTotalInvested">$0</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">Current Value</div>
+                    <div class="value" id="resCurrentValue">$0</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">Total P&L</div>
+                    <div class="value" id="resTotalPnL">$0</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">Win Rate</div>
+                    <div class="value gold" id="resWinRate">--</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">Best Trade</div>
+                    <div class="value green" id="resBestTrade">--</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">Worst Trade</div>
+                    <div class="value red" id="resWorstTrade">--</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">Avg Return</div>
+                    <div class="value" id="resAvgReturn">--</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Signal Accuracy Panel -->
+        <div class="results-panel" style="margin-top: 1rem;">
+            <h3>🎯 SIGNAL ACCURACY & PORTFOLIO STATS</h3>
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="label">BUY Signals Total</div>
+                    <div class="value cyan" id="sigBuyTotal">0</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">BUY Signals Profitable</div>
+                    <div class="value green" id="sigBuyProfitable">0</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">BUY Signal Accuracy</div>
+                    <div class="value gold" id="sigBuyAccuracy">--%</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">SELL Signals Total</div>
+                    <div class="value cyan" id="sigSellTotal">0</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">Mooners (+100%+)</div>
+                    <div class="value green" id="portMooners">0</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">Solid Gains (+50%+)</div>
+                    <div class="value green" id="portSolid">0</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">REKT (-50%+)</div>
+                    <div class="value red" id="portRekt">0</div>
+                </div>
+                <div class="result-card">
+                    <div class="label">Portfolio Win Rate</div>
+                    <div class="value gold" id="portWinRate">--%</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Movers Panel -->
+        <div class="results-panel" style="margin-top: 1rem;">
+            <h3>🔥 TOP MOVERS</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div style="background: rgba(0, 214, 143, 0.1); border-radius: 8px; padding: 1rem;">
+                    <h4 style="color: var(--green); margin-bottom: 0.5rem;">🌙 MOON SHOTS</h4>
+                    <div id="topMooners" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;"></div>
+                </div>
+                <div style="background: rgba(255, 71, 87, 0.1); border-radius: 8px; padding: 1rem;">
+                    <h4 style="color: var(--red); margin-bottom: 0.5rem;">💀 BIGGEST LOSERS</h4>
+                    <div id="topLosers" style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Tooltip -->
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        // Configuration
+        const API_BASE = ''; // Self-hosted on Vercel - no ngrok needed
+        const REFRESH_INTERVAL = 300000; // 5 minutes
+        const MAX_SLOTS = 20;
+        const FETCH_HEADERS = {
+            'Accept': 'application/json'
+        };
+
+        // State - persisted to SERVER (not localStorage)
+        let trackedCoins = [];
+        let experimentStart = null;
+        let signalHistory = {};
+        let stateLoaded = false;
+        let avgReturnHistory = [];  // { timestamp, avgReturn } - tracks avg return over time
+        
+        // Load state from server on init
+        async function loadStateFromServer() {
+            try {
+                const resp = await fetch('/api/state');
+                if (resp.ok) {
+                    const data = await resp.json();
+                    trackedCoins = data.coins || [];
+                    signalHistory = data.signals || {};
+                    experimentStart = data.experimentStart || new Date().toISOString();
+                    avgReturnHistory = data.avgReturnHistory || [];
+                    
+                    // Dedupe
+                    const seen = new Set();
+                    trackedCoins = trackedCoins.filter(c => {
+                        if (seen.has(c.symbol)) return false;
+                        seen.add(c.symbol);
+                        return true;
+                    });
+                    
+                    stateLoaded = true;
+                    console.log(`Loaded ${trackedCoins.length} coins from server`);
+                }
+            } catch (e) {
+                console.log('Could not load state from server, using empty state:', e);
+                stateLoaded = true;
+            }
+        }
+        
+        // Save state to server
+        async function saveStateToServer() {
+            try {
+                await fetch('/api/state', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        coins: trackedCoins,
+                        signals: signalHistory,
+                        experimentStart: experimentStart,
+                        avgReturnHistory: avgReturnHistory.slice(-500)
+                    })
+                });
+            } catch (e) {
+                console.log('Could not save state to server:', e);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load state from server first
+            await loadStateFromServer();
+            
+            if (!experimentStart) {
+                experimentStart = new Date().toISOString();
+            }
+            renderGrid();
+            updateStats();
+            loadData();
+            setInterval(loadData, REFRESH_INTERVAL);
+            
+            // Auto-save to server every 2 minutes
+            setInterval(saveStateToServer, 120000);
+        });
+
+        // Format price
+        function formatPrice(price) {
+            if (!price || price === 0) return '$0.00';
+            if (price < 0.00001) return '$' + price.toFixed(10).replace(/\.?0+$/, '');
+            if (price < 0.0001) return '$' + price.toFixed(8).replace(/\.?0+$/, '');
+            if (price < 0.01) return '$' + price.toFixed(6);
+            if (price < 1) return '$' + price.toFixed(4);
+            return '$' + price.toFixed(2);
+        }
+
+        // Update stats bar
+        function updateStats() {
+            document.getElementById('statTracking').textContent = `${trackedCoins.length}/${MAX_SLOTS}`;
+            
+            // Calculate days running
+            if (experimentStart) {
+                const days = Math.floor((Date.now() - new Date(experimentStart).getTime()) / (1000 * 60 * 60 * 24));
+                document.getElementById('statDays').textContent = days;
+            }
+
+            // Calculate win/loss stats
+            let winners = 0, losers = 0, totalReturn = 0, counted = 0;
+            trackedCoins.forEach(coin => {
+                if (coin.entryPrice && coin.currentPrice) {
+                    const pnl = ((coin.currentPrice - coin.entryPrice) / coin.entryPrice) * 100;
+                    if (pnl >= 50) winners++;
+                    if (pnl <= -50) losers++;
+                    totalReturn += pnl;
+                    counted++;
+                }
+            });
+
+            document.getElementById('statWinners').textContent = winners;
+            document.getElementById('statLosers').textContent = losers;
+            const currentAvgReturn = counted > 0 ? (totalReturn / counted) : null;
+            document.getElementById('statAvgReturn').textContent = currentAvgReturn !== null ? `${currentAvgReturn.toFixed(1)}%` : '--';
+            
+            // Record avg return history
+            if (currentAvgReturn !== null) {
+                const now = Date.now();
+                const lastEntry = avgReturnHistory[avgReturnHistory.length - 1];
+                // Add if: no entries, less than 5 entries (seed quickly), or 4+ min since last
+                const shouldAdd = !lastEntry || avgReturnHistory.length < 5 || (now - lastEntry.timestamp) > 240000;
+                if (shouldAdd) {
+                    avgReturnHistory.push({ timestamp: now, avgReturn: currentAvgReturn });
+                    // Keep max 500 entries
+                    if (avgReturnHistory.length > 500) avgReturnHistory.shift();
+                    saveStateToServer(); // Persist immediately
+                }
+            }
+            // Always render chart (shows existing history or waiting message)
+            renderAvgReturnChart(currentAvgReturn);
+            
+            if (winners + losers > 0) {
+                const winRate = (winners / (winners + losers)) * 100;
+                document.getElementById('statWinRate').textContent = `${winRate.toFixed(0)}%`;
+            }
+            
+            // Update paper trading results
+            updatePaperTradingResults();
+        }
+        
+        // Render the avg return chart (scrolling line chart)
+        function renderAvgReturnChart(currentAvgReturn) {
+            const canvas = document.getElementById('avgReturnChart');
+            if (!canvas) {
+                console.log('avgReturnChart canvas not found');
+                return;
+            }
+            
+            const ctx = canvas.getContext('2d');
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+            
+            // Debug info
+            console.log(`Chart render: ${avgReturnHistory.length} history points, currentAvg=${currentAvgReturn}`);
+            
+            // Use a copy to avoid mutating original
+            let data = [...avgReturnHistory];
+            
+            if (data.length === 0) {
+                ctx.fillStyle = '#12121f';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#6b7280';
+                ctx.font = '12px Inter';
+                ctx.textAlign = 'center';
+                const msg = currentAvgReturn === null 
+                    ? 'No coins with price data yet...' 
+                    : 'Recording first data point...';
+                ctx.fillText(msg, canvas.width / 2, canvas.height / 2);
+                return;
+            }
+            
+            // If only 1 point, duplicate it to draw a flat line
+            if (data.length === 1) {
+                data.push({ timestamp: Date.now(), avgReturn: data[0].avgReturn });
+            }
+            
+            const padding = { top: 15, right: 50, bottom: 25, left: 10 };
+            const chartWidth = canvas.width - padding.left - padding.right;
+            const chartHeight = canvas.height - padding.top - padding.bottom;
+            
+            // Get visible data (last 100 points max for scrolling effect)
+            const visibleData = data.slice(-100);
+            const values = visibleData.map(d => d.avgReturn);
+            const minVal = Math.min(...values, 0);
+            const maxVal = Math.max(...values, 0);
+            const range = Math.max(maxVal - minVal, 10); // Min 10% range
+            const paddedMin = minVal - range * 0.1;
+            const paddedMax = maxVal + range * 0.1;
+            const paddedRange = paddedMax - paddedMin;
+            
+            // Clear
+            ctx.fillStyle = '#12121f';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw zero line
+            const zeroY = padding.top + ((paddedMax - 0) / paddedRange) * chartHeight;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(padding.left, zeroY);
+            ctx.lineTo(canvas.width - padding.right, zeroY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // Draw vertical bars for each 5-min data point
+            const barWidth = Math.max(1, Math.min(4, (chartWidth / visibleData.length) - 1));
+            const barSpacing = chartWidth / visibleData.length;
+            
+            visibleData.forEach((point, i) => {
+                const x = padding.left + (i * barSpacing) + (barSpacing / 2) - (barWidth / 2);
+                const valueY = padding.top + ((paddedMax - point.avgReturn) / paddedRange) * chartHeight;
+                
+                // Color based on positive/negative
+                const isPositive = point.avgReturn >= 0;
+                ctx.fillStyle = isPositive ? '#00d68f' : '#ff4757';
+                
+                // Draw bar from zero line to value
+                if (isPositive) {
+                    ctx.fillRect(x, valueY, barWidth, zeroY - valueY);
+                } else {
+                    ctx.fillRect(x, zeroY, barWidth, valueY - zeroY);
+                }
+                
+                // Add slight glow effect on recent bars
+                if (i >= visibleData.length - 3) {
+                    ctx.shadowColor = isPositive ? '#00d68f' : '#ff4757';
+                    ctx.shadowBlur = 4;
+                    ctx.fillRect(x, valueY, barWidth, Math.abs(zeroY - valueY));
+                    ctx.shadowBlur = 0;
+                }
+            });
+            
+            // Y-axis labels
+            ctx.fillStyle = '#9ca3af';
+            ctx.font = '10px JetBrains Mono';
+            ctx.textAlign = 'right';
+            ctx.fillText(`${paddedMax.toFixed(0)}%`, canvas.width - 5, padding.top + 10);
+            ctx.fillText(`${paddedMin.toFixed(0)}%`, canvas.width - 5, canvas.height - padding.bottom - 5);
+            ctx.fillText('0%', canvas.width - 5, zeroY + 3);
+            
+            // Time labels
+            ctx.textAlign = 'center';
+            const firstTime = new Date(visibleData[0].timestamp);
+            const lastTime = new Date(visibleData[visibleData.length - 1].timestamp);
+            ctx.fillText(firstTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), padding.left + 30, canvas.height - 5);
+            ctx.fillText(lastTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), canvas.width - padding.right - 30, canvas.height - 5);
+            
+            // Update current value and trend
+            const current = values[values.length - 1];
+            const prev = values.length > 5 ? values[values.length - 6] : values[0];
+            const trend = current - prev;
+            
+            document.getElementById('avgReturnCurrent').textContent = `${current >= 0 ? '+' : ''}${current.toFixed(1)}%`;
+            document.getElementById('avgReturnCurrent').style.color = current >= 0 ? '#00d68f' : '#ff4757';
+            
+            const trendEl = document.getElementById('avgReturnTrend');
+            trendEl.textContent = trend >= 0 ? `▲ ${trend.toFixed(1)}%` : `▼ ${Math.abs(trend).toFixed(1)}%`;
+            trendEl.style.color = trend >= 0 ? '#00d68f' : '#ff4757';
+            
+            // Overlay info
+            const duration = (lastTime - firstTime) / (1000 * 60);
+            document.getElementById('avgReturnOverlay').textContent = `${visibleData.length} pts | ${duration.toFixed(0)}min span`;
+        }
+        
+        // Update paper trading results panel
+        function updatePaperTradingResults() {
+            // First update all paper trade P&Ls
+            updatePaperTrades();
+            
+            // Collect all BUY signals with paper trades
+            let trades = [];
+            for (const symbol in signalHistory) {
+                for (const signal of signalHistory[symbol]) {
+                    if (signal.type === 'BUY' && signal.paperTrade) {
+                        trades.push({
+                            symbol: symbol,
+                            ...signal.paperTrade,
+                            timestamp: signal.timestamp
+                        });
+                    }
+                }
+            }
+            
+            if (trades.length === 0) {
+                document.getElementById('resTotalTrades').textContent = '0';
+                document.getElementById('resTotalInvested').textContent = '$0';
+                document.getElementById('resCurrentValue').textContent = '$0';
+                document.getElementById('resTotalPnL').textContent = '$0';
+                document.getElementById('resWinRate').textContent = '--';
+                document.getElementById('resBestTrade').textContent = '--';
+                document.getElementById('resWorstTrade').textContent = '--';
+                document.getElementById('resAvgReturn').textContent = '--';
+                return;
+            }
+            
+            const totalInvested = trades.reduce((sum, t) => sum + t.invested, 0);
+            const currentValue = trades.reduce((sum, t) => sum + t.currentValue, 0);
+            const totalPnL = currentValue - totalInvested;
+            const winners = trades.filter(t => t.pnl > 0).length;
+            const winRate = (winners / trades.length) * 100;
+            
+            const sortedByPnl = [...trades].sort((a, b) => b.pnlPercent - a.pnlPercent);
+            const best = sortedByPnl[0];
+            const worst = sortedByPnl[sortedByPnl.length - 1];
+            const avgReturn = trades.reduce((sum, t) => sum + t.pnlPercent, 0) / trades.length;
+            
+            document.getElementById('resTotalTrades').textContent = trades.length;
+            document.getElementById('resTotalInvested').textContent = `$${totalInvested.toFixed(0)}`;
+            
+            const valueEl = document.getElementById('resCurrentValue');
+            valueEl.textContent = `$${currentValue.toFixed(2)}`;
+            valueEl.className = `value ${totalPnL >= 0 ? 'green' : 'red'}`;
+            
+            const pnlEl = document.getElementById('resTotalPnL');
+            pnlEl.textContent = `${totalPnL >= 0 ? '+' : ''}$${totalPnL.toFixed(2)}`;
+            pnlEl.className = `value ${totalPnL >= 0 ? 'green' : 'red'}`;
+            
+            document.getElementById('resWinRate').textContent = `${winRate.toFixed(0)}%`;
+            document.getElementById('resBestTrade').textContent = best ? `${best.symbol} +${best.pnlPercent.toFixed(1)}%` : '--';
+            document.getElementById('resWorstTrade').textContent = worst ? `${worst.symbol} ${worst.pnlPercent.toFixed(1)}%` : '--';
+            document.getElementById('resAvgReturn').textContent = `${avgReturn >= 0 ? '+' : ''}${avgReturn.toFixed(1)}%`;
+            document.getElementById('resAvgReturn').className = `value ${avgReturn >= 0 ? 'green' : 'red'}`;
+            
+            // Also update signal accuracy
+            updateSignalAccuracy();
+        }
+        
+        // Update signal accuracy and portfolio stats
+        function updateSignalAccuracy() {
+            // Count signals by type
+            let buySignals = 0;
+            let sellSignals = 0;
+            let profitableBuys = 0;
+            
+            for (const symbol in signalHistory) {
+                for (const signal of signalHistory[symbol]) {
+                    if (signal.type === 'BUY') {
+                        buySignals++;
+                        // Check if buy was profitable (current price > signal price)
+                        const coin = trackedCoins.find(c => c.symbol === symbol);
+                        if (coin && coin.currentPrice > signal.price) {
+                            profitableBuys++;
+                        }
+                    } else if (signal.type === 'SELL') {
+                        sellSignals++;
+                    }
+                }
+            }
+            
+            document.getElementById('sigBuyTotal').textContent = buySignals;
+            document.getElementById('sigBuyProfitable').textContent = profitableBuys;
+            document.getElementById('sigBuyAccuracy').textContent = buySignals > 0 ? `${Math.round((profitableBuys / buySignals) * 100)}%` : '--%';
+            document.getElementById('sigSellTotal').textContent = sellSignals;
+            
+            // Portfolio stats
+            let mooners = 0;  // +100%
+            let solid = 0;    // +50% to +100%
+            let rekt = 0;     // -50% or worse
+            let winners = 0;
+            
+            trackedCoins.forEach(coin => {
+                if (coin.entryPrice && coin.currentPrice) {
+                    const pnl = ((coin.currentPrice - coin.entryPrice) / coin.entryPrice) * 100;
+                    if (pnl >= 100) mooners++;
+                    else if (pnl >= 50) solid++;
+                    if (pnl <= -50) rekt++;
+                    if (pnl > 0) winners++;
+                }
+            });
+            
+            document.getElementById('portMooners').textContent = mooners;
+            document.getElementById('portSolid').textContent = solid;
+            document.getElementById('portRekt').textContent = rekt;
+            document.getElementById('portWinRate').textContent = trackedCoins.length > 0 ? `${Math.round((winners / trackedCoins.length) * 100)}%` : '--%';
+            
+            // Update top movers
+            updateTopMovers();
+        }
+        
+        // Update top movers panels
+        function updateTopMovers() {
+            const coinsWithPnl = trackedCoins
+                .filter(c => c.entryPrice && c.currentPrice)
+                .map(c => ({
+                    symbol: c.symbol,
+                    pnl: ((c.currentPrice - c.entryPrice) / c.entryPrice) * 100
+                }))
+                .sort((a, b) => b.pnl - a.pnl);
+            
+            // Top 5 mooners
+            const mooners = coinsWithPnl.filter(c => c.pnl > 0).slice(0, 5);
+            const moonHtml = mooners.length > 0 
+                ? mooners.map(c => `<div style="margin: 0.25rem 0;">${c.symbol}: <span style="color: var(--green)">+${c.pnl.toFixed(0)}%</span></div>`).join('')
+                : '<div style="color: var(--text-dim)">No mooners yet</div>';
+            document.getElementById('topMooners').innerHTML = moonHtml;
+            
+            // Top 5 losers
+            const losers = coinsWithPnl.filter(c => c.pnl < 0).slice(-5).reverse();
+            const loserHtml = losers.length > 0
+                ? losers.map(c => `<div style="margin: 0.25rem 0;">${c.symbol}: <span style="color: var(--red)">${c.pnl.toFixed(0)}%</span></div>`).join('')
+                : '<div style="color: var(--text-dim)">No losers yet</div>';
+            document.getElementById('topLosers').innerHTML = loserHtml;
+        }
+
+        // Render the grid
+        function renderGrid() {
+            const grid = document.getElementById('chartsGrid');
+            let html = '';
+
+            // Render tracked coins
+            trackedCoins.forEach((coin, index) => {
+                html += renderCoinCard(coin, index);
+            });
+
+            // Render empty slots
+            for (let i = trackedCoins.length; i < MAX_SLOTS; i++) {
+                html += `
+                    <div class="empty-slot" data-slot="${i}">
+                        <div class="icon">📊</div>
+                        <div class="text">Slot ${i + 1} - Waiting for token</div>
+                    </div>
+                `;
+            }
+
+            grid.innerHTML = html;
+
+            // Initialize charts for tracked coins
+            trackedCoins.forEach((coin, index) => {
+                renderMiniChart(coin, index);
+            });
+        }
+
+        // Render a coin card
+        function renderCoinCard(coin, index) {
+            const pnl = coin.entryPrice && coin.currentPrice 
+                ? ((coin.currentPrice - coin.entryPrice) / coin.entryPrice) * 100 
+                : 0;
+            const pnlClass = pnl >= 0 ? 'up' : 'down';
+            const cardClass = pnl >= 20 ? 'positive' : pnl <= -20 ? 'negative' : coin.isNew ? 'new' : '';
+            
+            const signals = signalHistory[coin.symbol] || [];
+            const buySignals = signals.filter(s => s.type === 'BUY');
+            const sellSignals = signals.filter(s => s.type === 'SELL');
+
+            return `
+                <div class="coin-card ${cardClass}" data-symbol="${coin.symbol}" data-index="${index}">
+                    <div class="coin-header">
+                        <div class="coin-info">
+                            <div class="coin-icon">${coin.symbol.substring(0, 2)}</div>
+                            <div>
+                                <div class="coin-name">$${coin.symbol}</div>
+                                <div class="coin-meta">Age: ${coin.age || 'NEW'} | Liq: $${formatLiquidity(coin.liquidity)}</div>
+                            </div>
+                        </div>
+                        <div class="coin-price">
+                            <div class="current">${formatPrice(coin.currentPrice)}</div>
+                            <div class="change ${pnlClass}">${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}% from entry</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-area">
+                        <canvas class="chart-canvas" id="chart-${index}"></canvas>
+                    </div>
+                    
+                    <div class="mention-bar">
+                        <span class="label">MENTIONS</span>
+                        <div id="mentions-${index}" style="display: flex; flex: 1; gap: 2px;"></div>
+                    </div>
+                    
+                    <div class="signals-row">
+                        <div class="signal-flags">
+                            ${buySignals.map(s => `
+                                <div class="signal-flag buy" title="${s.reason}" data-signal='${JSON.stringify(s)}'>
+                                    ▲ BUY ${formatPrice(s.price)}
+                                </div>
+                            `).join('')}
+                            ${sellSignals.map(s => `
+                                <div class="signal-flag sell" title="${s.reason}" data-signal='${JSON.stringify(s)}'>
+                                    ▼ SELL ${formatPrice(s.price)}
+                                </div>
+                            `).join('')}
+                            ${signals.length === 0 ? '<span style="color: var(--text-dim); font-size: 0.65rem;">No signals yet</span>' : ''}
+                        </div>
+                        <div class="signal-perf ${pnl >= 0 ? 'positive' : 'negative'}">
+                            ${signals.length > 0 ? `Last signal: ${getLastSignalPerf(coin, signals)}` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="coin-stats">
+                        <div class="coin-stat">
+                            <div class="label">Entry</div>
+                            <div class="value">${formatPrice(coin.entryPrice)}</div>
+                        </div>
+                        <div class="coin-stat">
+                            <div class="label">ATH</div>
+                            <div class="value" style="color: var(--green)">${formatPrice(coin.ath)}</div>
+                        </div>
+                        <div class="coin-stat">
+                            <div class="label">ATL</div>
+                            <div class="value" style="color: var(--red)">${formatPrice(coin.atl)}</div>
+                        </div>
+                        <div class="coin-stat">
+                            <div class="label">Mentions</div>
+                            <div class="value" style="color: var(--cyan)">${coin.totalMentions || 0}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Format liquidity
+        function formatLiquidity(liq) {
+            if (!liq) return '0';
+            if (liq >= 1000000) return (liq / 1000000).toFixed(1) + 'M';
+            if (liq >= 1000) return (liq / 1000).toFixed(1) + 'K';
+            return liq.toFixed(0);
+        }
+
+        // Get last signal performance
+        function getLastSignalPerf(coin, signals) {
+            if (signals.length === 0) return '';
+            const last = signals[signals.length - 1];
+            if (!last.price || !coin.currentPrice) return '';
+            const perf = ((coin.currentPrice - last.price) / last.price) * 100;
+            return `${perf >= 0 ? '+' : ''}${perf.toFixed(1)}%`;
+        }
+
+        // Zoom state per chart
+        const chartZoomState = {};
+        
+        // Render mini chart with zoom/pan support
+        function renderMiniChart(coin, index) {
+            const canvas = document.getElementById(`chart-${index}`);
+            if (!canvas) return;
+            
+            // Initialize zoom state
+            if (!chartZoomState[index]) {
+                chartZoomState[index] = { zoom: 1, pan: 0 };
+                initChartInteraction(canvas, index, coin);
+            }
+            
+            const ctx = canvas.getContext('2d');
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+
+            const priceHistory = coin.priceHistory || [];
+            if (priceHistory.length < 2) {
+                ctx.fillStyle = '#6b7280';
+                ctx.font = '11px Inter';
+                ctx.textAlign = 'center';
+                ctx.fillText('Collecting data...', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            // Apply zoom/pan
+            const state = chartZoomState[index];
+            const totalPoints = priceHistory.length;
+            const visibleCount = Math.max(10, Math.floor(totalPoints / state.zoom));
+            const startIdx = Math.max(0, Math.min(totalPoints - visibleCount, totalPoints - visibleCount - state.pan));
+            const endIdx = Math.min(totalPoints, startIdx + visibleCount);
+            const visibleHistory = priceHistory.slice(startIdx, endIdx);
+
+            // Calculate bounds from visible data
+            const prices = visibleHistory.map(p => p.price);
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+            const priceRange = maxPrice - minPrice || minPrice * 0.1 || 1;
+
+            const padding = { top: 15, right: 50, bottom: 25, left: 10 };
+            const chartWidth = canvas.width - padding.left - padding.right;
+            const chartHeight = canvas.height - padding.top - padding.bottom;
+
+            // Clear canvas
+            ctx.fillStyle = '#0f0f1a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            ctx.strokeStyle = '#1a1a2e';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding.top + (chartHeight * i / 4);
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(canvas.width - padding.right, y);
+                ctx.stroke();
+                
+                // Price labels
+                const price = maxPrice - (priceRange * i / 4);
+                ctx.fillStyle = '#6b7280';
+                ctx.font = '9px JetBrains Mono';
+                ctx.textAlign = 'left';
+                ctx.fillText(formatPrice(price), canvas.width - padding.right + 3, y + 3);
+            }
+
+            // Draw price line
+            ctx.beginPath();
+            ctx.strokeStyle = coin.currentPrice >= coin.entryPrice ? '#00d68f' : '#ff4757';
+            ctx.lineWidth = 2;
+
+            visibleHistory.forEach((point, i) => {
+                const x = padding.left + (i / (visibleHistory.length - 1)) * chartWidth;
+                const y = padding.top + ((maxPrice - point.price) / priceRange) * chartHeight;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            // Draw area under line
+            ctx.lineTo(padding.left + chartWidth, canvas.height - padding.bottom);
+            ctx.lineTo(padding.left, canvas.height - padding.bottom);
+            ctx.closePath();
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            const color = coin.currentPrice >= coin.entryPrice ? '0, 214, 143' : '255, 71, 87';
+            gradient.addColorStop(0, `rgba(${color}, 0.2)`);
+            gradient.addColorStop(1, `rgba(${color}, 0)`);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // Draw MENTION COUNT line (cyan) - secondary axis
+            const mentionHistory = coin.mentionHistory || [];
+            if (mentionHistory.length >= 2) {
+                // Get visible mentions matching visible price history timeframe
+                const visibleMentions = mentionHistory.slice(-visibleHistory.length);
+                const mentionCounts = visibleMentions.map(m => m.count || 0);
+                const maxMentions = Math.max(...mentionCounts, 1);
+                const minMentions = Math.min(...mentionCounts, 0);
+                const mentionRange = maxMentions - minMentions || 1;
+                
+                // Draw mention line
+                ctx.beginPath();
+                ctx.strokeStyle = '#00bcd4'; // Cyan
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([4, 2]); // Dashed line to distinguish
+                
+                visibleMentions.forEach((m, i) => {
+                    if (i >= visibleHistory.length) return;
+                    const x = padding.left + (i / (visibleHistory.length - 1)) * chartWidth;
+                    // Scale mentions to chart height (inverted Y)
+                    const y = padding.top + ((maxMentions - m.count) / mentionRange) * chartHeight;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.stroke();
+                ctx.setLineDash([]); // Reset dash
+                
+                // Draw mention count label on right axis
+                ctx.fillStyle = '#00bcd4';
+                ctx.font = '8px JetBrains Mono';
+                ctx.textAlign = 'right';
+                ctx.fillText(`${maxMentions}`, canvas.width - 2, padding.top + 8);
+                ctx.fillText(`${minMentions}`, canvas.width - 2, canvas.height - padding.bottom - 2);
+                ctx.fillText('MENTIONS', canvas.width - 2, padding.top + 18);
+            }
+
+            // Draw entry price line
+            if (coin.entryPrice && coin.entryPrice >= minPrice && coin.entryPrice <= maxPrice) {
+                const entryY = padding.top + ((maxPrice - coin.entryPrice) / priceRange) * chartHeight;
+                ctx.strokeStyle = '#f0b90b';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.moveTo(padding.left, entryY);
+                ctx.lineTo(canvas.width - padding.right, entryY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#f0b90b';
+                ctx.font = '8px JetBrains Mono';
+                ctx.fillText('ENTRY', padding.left + 2, entryY - 3);
+            }
+
+            // Draw signal markers and store positions for hover
+            const signals = signalHistory[coin.symbol] || [];
+            chartSignalPositions[index] = []; // Reset positions
+            
+            signals.forEach(signal => {
+                const signalTime = new Date(signal.timestamp).getTime();
+                
+                // Find index in visible range
+                let visibleIdx = -1;
+                visibleHistory.forEach((p, i) => {
+                    const pTime = new Date(p.timestamp).getTime();
+                    if (Math.abs(pTime - signalTime) < 5 * 60 * 1000) { // Within 5 min
+                        visibleIdx = i;
+                    }
+                });
+                
+                if (visibleIdx === -1) return; // Signal not in visible range
+
+                const x = padding.left + (visibleIdx / (visibleHistory.length - 1)) * chartWidth;
+                const signalPrice = signal.price;
+                if (signalPrice < minPrice || signalPrice > maxPrice) return;
+                const y = padding.top + ((maxPrice - signalPrice) / priceRange) * chartHeight;
+
+                // Store position for hover detection
+                chartSignalPositions[index].push({ x, y, signal });
+
+                const isBuy = signal.type === 'BUY';
+                
+                // Draw glow
+                ctx.beginPath();
+                ctx.arc(x, y, 10, 0, Math.PI * 2);
+                ctx.fillStyle = isBuy ? 'rgba(0, 214, 143, 0.3)' : 'rgba(255, 71, 87, 0.3)';
+                ctx.fill();
+                
+                // Draw triangle
+                ctx.beginPath();
+                if (isBuy) {
+                    ctx.moveTo(x, y - 8);
+                    ctx.lineTo(x - 6, y + 4);
+                    ctx.lineTo(x + 6, y + 4);
+                } else {
+                    ctx.moveTo(x, y + 8);
+                    ctx.lineTo(x - 6, y - 4);
+                    ctx.lineTo(x + 6, y - 4);
+                }
+                ctx.closePath();
+                ctx.fillStyle = isBuy ? '#00d68f' : '#ff4757';
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
+                // Label
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 8px Inter';
+                ctx.textAlign = 'center';
+                ctx.fillText(isBuy ? 'B' : 'S', x, isBuy ? y - 12 : y + 14);
+            });
+
+            // Draw zoom indicator
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '8px JetBrains Mono';
+            ctx.textAlign = 'left';
+            const zoomText = state.zoom > 1 ? `${state.zoom.toFixed(1)}x` : 'ALL';
+            ctx.fillText(`🔍 ${zoomText}`, padding.left, canvas.height - 5);
+            
+            // Time labels
+            ctx.textAlign = 'center';
+            if (visibleHistory.length > 0) {
+                const first = new Date(visibleHistory[0].timestamp);
+                const last = new Date(visibleHistory[visibleHistory.length - 1].timestamp);
+                ctx.fillText(first.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}), padding.left + 20, canvas.height - 5);
+                ctx.fillText(last.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}), canvas.width - padding.right - 20, canvas.height - 5);
+            }
+
+            // Render mention heatmap
+            renderMentionHeatmap(coin, index);
+        }
+        
+        // Store signal positions for each chart (for hover detection)
+        const chartSignalPositions = {};
+        
+        // Initialize chart zoom/pan interaction
+        function initChartInteraction(canvas, index, coin) {
+            let isDragging = false;
+            let dragStartX = 0;
+            let dragStartPan = 0;
+            
+            // Scroll to zoom
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const state = chartZoomState[index];
+                const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+                state.zoom = Math.max(1, Math.min(10, state.zoom * zoomFactor));
+                renderMiniChart(coin, index);
+            });
+            
+            // Drag to pan
+            canvas.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                dragStartX = e.clientX;
+                dragStartPan = chartZoomState[index].pan;
+                canvas.style.cursor = 'grabbing';
+            });
+            
+            canvas.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    const dx = e.clientX - dragStartX;
+                    const state = chartZoomState[index];
+                    const totalPoints = (coin.priceHistory || []).length;
+                    const sensitivity = totalPoints / canvas.width;
+                    state.pan = Math.max(-(totalPoints - 10), Math.min(0, dragStartPan + dx * sensitivity));
+                    renderMiniChart(coin, index);
+                    return;
+                }
+                
+                // Check for signal hover
+                const positions = chartSignalPositions[index] || [];
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                let hoveredSignal = null;
+                for (const pos of positions) {
+                    const dist = Math.sqrt(Math.pow(mouseX - pos.x, 2) + Math.pow(mouseY - pos.y, 2));
+                    if (dist < 15) {
+                        hoveredSignal = pos.signal;
+                        break;
+                    }
+                }
+                
+                if (hoveredSignal) {
+                    canvas.style.cursor = 'pointer';
+                    showSignalTooltip(hoveredSignal, e.clientX, e.clientY);
+                } else {
+                    canvas.style.cursor = 'crosshair';
+                    hideSignalTooltip();
+                }
+            });
+            
+            canvas.addEventListener('mouseup', () => {
+                isDragging = false;
+                canvas.style.cursor = 'crosshair';
+            });
+            
+            canvas.addEventListener('mouseleave', () => {
+                isDragging = false;
+                canvas.style.cursor = 'crosshair';
+                hideSignalTooltip();
+            });
+            
+            // Double-click to reset
+            canvas.addEventListener('dblclick', () => {
+                chartZoomState[index] = { zoom: 1, pan: 0 };
+                renderMiniChart(coin, index);
+            });
+            
+            canvas.style.cursor = 'crosshair';
+        }
+        
+        // Show signal tooltip for chart markers
+        function showSignalTooltip(signal, clientX, clientY) {
+            const tooltip = document.getElementById('tooltip');
+            
+            let paperTradeHtml = '';
+            if (signal.type === 'BUY' && signal.paperTrade) {
+                const pt = signal.paperTrade;
+                const pnlColor = pt.pnl >= 0 ? 'var(--green)' : 'var(--red)';
+                paperTradeHtml = `
+                    <div style="background: var(--bg-secondary); border-radius: 6px; padding: 0.5rem; margin-top: 0.5rem; border-left: 3px solid var(--gold);">
+                        <div style="font-size: 0.65rem; color: var(--gold); margin-bottom: 0.25rem;">📊 PAPER TRADE ($${pt.invested})</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem; font-size: 0.7rem;">
+                            <div>Entry: ${formatPrice(pt.entryPrice)}</div>
+                            <div>Shares: ${pt.shares.toFixed(0)}</div>
+                            <div>Value: <span style="color: ${pnlColor}">$${pt.currentValue.toFixed(2)}</span></div>
+                            <div>P&L: <span style="color: ${pnlColor}">${pt.pnl >= 0 ? '+' : ''}$${pt.pnl.toFixed(2)} (${pt.pnlPercent >= 0 ? '+' : ''}${pt.pnlPercent.toFixed(1)}%)</span></div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const analysisHtml = signal.detailedAnalysis ? 
+                signal.detailedAnalysis.map(a => `<div style="margin-bottom: 0.3rem;">• ${a}</div>`).join('') :
+                `<div>• ${signal.reason || 'Signal generated'}</div>`;
+            
+            tooltip.innerHTML = `
+                <div style="font-weight: bold; font-size: 1rem; color: ${signal.type === 'BUY' ? 'var(--green)' : 'var(--red)'}; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+                    ${signal.type === 'BUY' ? '🟢' : '🔴'} ${signal.type} SIGNAL
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.75rem;">
+                    <div><span style="color: var(--text-dim);">Price:</span> ${formatPrice(signal.price)}</div>
+                    <div><span style="color: var(--text-dim);">RSI:</span> <span style="${signal.rsi < 30 ? 'color: var(--green)' : signal.rsi > 70 ? 'color: var(--red)' : ''}">${signal.rsi || '--'}</span></div>
+                    <div><span style="color: var(--text-dim);">Time:</span> ${new Date(signal.timestamp).toLocaleString()}</div>
+                    <div><span style="color: var(--text-dim);">Confidence:</span> <span style="color: var(--gold)">${Math.round((signal.confidence || 0.5) * 100)}%</span></div>
+                </div>
+                <div style="background: rgba(0,188,212,0.1); border-radius: 6px; padding: 0.5rem; margin-top: 0.5rem;">
+                    <div style="font-size: 0.65rem; color: var(--cyan); margin-bottom: 0.5rem; font-weight: bold;">💡 WHY THIS SIGNAL?</div>
+                    <div style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.4;">
+                        ${analysisHtml}
+                    </div>
+                </div>
+                ${paperTradeHtml}
+            `;
+            
+            let left = clientX + 15;
+            let top = clientY + 15;
+            if (left + 320 > window.innerWidth) left = clientX - 330;
+            if (top + 400 > window.innerHeight) top = Math.max(10, window.innerHeight - 410);
+            
+            tooltip.style.left = `${left}px`;
+            tooltip.style.top = `${top}px`;
+            tooltip.style.maxWidth = '320px';
+            tooltip.classList.add('show');
+        }
+        
+        function hideSignalTooltip() {
+            document.getElementById('tooltip').classList.remove('show');
+        }
+
+        // Render mention heatmap
+        function renderMentionHeatmap(coin, index) {
+            const container = document.getElementById(`mentions-${index}`);
+            if (!container) return;
+
+            const mentionHistory = coin.mentionHistory || [];
+            if (mentionHistory.length === 0) {
+                container.innerHTML = '<span style="color: var(--text-dim); font-size: 0.5rem;">No mention data</span>';
+                return;
+            }
+
+            const maxMentions = Math.max(...mentionHistory.map(m => m.count), 1);
+            
+            container.innerHTML = mentionHistory.map(m => {
+                const intensity = m.count / maxMentions;
+                const opacity = 0.2 + (intensity * 0.8);
+                const height = 4 + (intensity * 8);
+                return `<div class="mention-segment" style="
+                    background: rgba(0, 188, 212, ${opacity});
+                    height: ${height}px;
+                " title="${m.count} mentions at ${new Date(m.timestamp).toLocaleTimeString()}"></div>`;
+            }).join('');
+        }
+
+        // Load data from API
+        async function loadData() {
+            try {
+                // No more ngrok dependency - fetch directly from DexScreener
+                // Build a synthetic moltbookData object from DexScreener trending
+                const moltbookData = { posts: [], pumps: {} };
+                
+                // Fetch trending/boosted tokens from DexScreener
+                try {
+                    const boostResp = await fetch('/api/dex?endpoint=boosts');
+                    if (boostResp.ok) {
+                        const boostData = await boostResp.json();
+                        const tokens = Array.isArray(boostData) ? boostData : [];
+                        for (const token of tokens) {
+                            if (token.chainId === 'solana' && token.tokenAddress) {
+                                const sym = (token.description || token.url || '').toUpperCase().slice(0, 10);
+                                if (sym) {
+                                    moltbookData.pumps[sym] = {
+                                        symbol: sym,
+                                        mention_count: token.amount || 1,
+                                        age_hours: 1,
+                                        price: { current: 0, liquidity: 0 },
+                                        tokenAddress: token.tokenAddress
+                                    };
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.log('Boost fetch skipped:', e.message);
+                }
+
+                // Update tracked coins with latest prices from DexScreener
+                await updateTrackedCoins(moltbookData);
+
+                // Check for new tokens to auto-discover
+                await discoverNewTokens(moltbookData);
+
+                // Re-render
+                renderGrid();
+                updateStats();
+
+                document.getElementById('lastUpdate').textContent = `Last update: ${new Date().toLocaleTimeString()}`;
+            } catch (error) {
+                console.error('Load error:', error);
+            }
+        }
+
+        // Update tracked coins with latest data
+        async function updateTrackedCoins(moltbookData) {
+            for (const coin of trackedCoins) {
+                try {
+                    let priceUpdated = false;
+                    
+                    // Fetch price directly from DexScreener (no more ngrok chart API)
+                    try {
+                        const dexResp = await fetch(`/api/dex?endpoint=search&q=${coin.symbol}`);
+                        if (dexResp.ok) {
+                            const dexData = await dexResp.json();
+                            const pairs = (dexData.pairs || [])
+                                .filter(p => p.chainId === 'solana' && 
+                                        p.baseToken?.symbol?.toUpperCase() === coin.symbol);
+                            
+                            if (pairs.length > 0) {
+                                const price = parseFloat(pairs[0].priceUsd) || 0;
+                                if (price > 0) {
+                                    coin.currentPrice = price;
+                                    coin.liquidity = pairs[0].liquidity?.usd || coin.liquidity;
+                                    coin.tokenAddress = pairs[0].baseToken?.address || coin.tokenAddress;
+                                    priceUpdated = true;
+                                }
+                            }
+                        }
+                        await new Promise(r => setTimeout(r, 250)); // Rate limit
+                    } catch (e) {
+                        console.log(`DexScreener fetch failed for ${coin.symbol}`);
+                    }
+                    
+                    // Update ATH/ATL if price updated
+                    if (priceUpdated && coin.currentPrice > 0) {
+                        if (!coin.ath || coin.currentPrice > coin.ath) coin.ath = coin.currentPrice;
+                        if (!coin.atl || coin.currentPrice < coin.atl) coin.atl = coin.currentPrice;
+                        
+                        // Add to price history
+                        if (!coin.priceHistory) coin.priceHistory = [];
+                        coin.priceHistory.push({
+                            price: coin.currentPrice,
+                            timestamp: new Date().toISOString()
+                        });
+                        // Keep last 288 points (24 hours at 5-min intervals)
+                        if (coin.priceHistory.length > 288) {
+                            coin.priceHistory = coin.priceHistory.slice(-288);
+                        }
+                    }
+
+                    // Count mentions from Moltbook data
+                    const posts = moltbookData.posts || [];
+                    const mentionCount = posts.filter(p => 
+                        (p.content || '').toLowerCase().includes(coin.symbol.toLowerCase()) ||
+                        (p.title || '').toLowerCase().includes(coin.symbol.toLowerCase())
+                    ).length;
+
+                    // Update mention history
+                    if (!coin.mentionHistory) coin.mentionHistory = [];
+                    coin.mentionHistory.push({
+                        count: mentionCount,
+                        timestamp: new Date().toISOString()
+                    });
+                    if (coin.mentionHistory.length > 288) {
+                        coin.mentionHistory = coin.mentionHistory.slice(-288);
+                    }
+                    coin.totalMentions = (coin.totalMentions || 0) + mentionCount;
+
+                    // Generate signals based on analysis
+                    await generateSignals(coin, moltbookData);
+
+                } catch (error) {
+                    console.error(`Error updating ${coin.symbol}:`, error);
+                }
+            }
+
+            // Save state to server
+            saveStateToServer();
+        }
+
+        // Paper trading config
+        const PAPER_TRADE_AMOUNT = 10; // $10 per trade
+
+        // Generate buy/sell signals - MATCHING SENTINEL/SHIPYARD CRITERIA
+        async function generateSignals(coin, moltbookData) {
+            // Need at least 6 data points to calculate meaningful RSI
+            if (!coin.priceHistory || coin.priceHistory.length < 6) return;
+            if (!signalHistory[coin.symbol]) signalHistory[coin.symbol] = [];
+
+            const prices = coin.priceHistory.map(p => p.price);
+            const currentPrice = coin.currentPrice;
+
+            // Calculate RSI (use available data, min 6 points)
+            const period = Math.min(14, prices.length - 1);
+            let gains = [];
+            let losses = [];
+            for (let i = 1; i < prices.length; i++) {
+                const change = prices[i] - prices[i - 1];
+                gains.push(change > 0 ? change : 0);
+                losses.push(change < 0 ? Math.abs(change) : 0);
+            }
+            const recentGains = gains.slice(-period);
+            const recentLosses = losses.slice(-period);
+            const avgGain = recentGains.reduce((a, b) => a + b, 0) / period;
+            const avgLoss = recentLosses.reduce((a, b) => a + b, 0) / period;
+            const rs = avgLoss === 0 ? (avgGain > 0 ? 100 : 1) : avgGain / avgLoss;
+            const rsi = 100 - (100 / (1 + rs));
+
+            // Calculate support/resistance
+            const support = Math.min(...prices.slice(-20));
+            const resistance = Math.max(...prices.slice(-20));
+            
+            // Calculate price momentum
+            const priceChange1h = prices.length >= 12 ? ((currentPrice - prices[prices.length - 12]) / prices[prices.length - 12]) * 100 : 0;
+            const priceChange24h = prices.length >= 2 ? ((currentPrice - prices[0]) / prices[0]) * 100 : 0;
+            
+            // Calculate volatility
+            const priceChanges = [];
+            for (let i = 1; i < prices.length; i++) {
+                priceChanges.push(Math.abs((prices[i] - prices[i-1]) / prices[i-1]) * 100);
+            }
+            const avgVolatility = priceChanges.length > 0 ? priceChanges.reduce((a,b) => a+b, 0) / priceChanges.length : 0;
+
+            // Check for last signal to avoid duplicates (1 hour cooldown - matching Sentinel)
+            const lastSignal = signalHistory[coin.symbol][signalHistory[coin.symbol].length - 1];
+            const timeSinceLastSignal = lastSignal 
+                ? (Date.now() - new Date(lastSignal.timestamp).getTime()) / (1000 * 60) 
+                : Infinity;
+
+            // Minimum 60 minutes between signals (matching Sentinel)
+            if (timeSinceLastSignal < 60) return;
+
+            let signal = null;
+            let reasons = [];
+            let detailedAnalysis = [];
+            let confidence = 0.5;
+
+            // ========== BUY CONDITIONS (Matching Sentinel) ==========
+            
+            // Condition 1: RSI extremely oversold (< 25)
+            if (rsi < 25) {
+                reasons.push(`RSI extremely oversold (${rsi.toFixed(1)})`);
+                detailedAnalysis.push(`📊 RSI at ${rsi.toFixed(1)} is EXTREMELY OVERSOLD (below 25). This indicates heavy selling pressure has likely exhausted sellers - historically a strong reversal signal.`);
+                confidence += 0.2;
+                signal = 'BUY';
+            }
+            // Condition 2: RSI oversold (< 35) AND price near support
+            else if (rsi < 35 && currentPrice <= support * 1.05) {
+                reasons.push(`RSI oversold (${rsi.toFixed(1)})`);
+                reasons.push('Price near support');
+                detailedAnalysis.push(`📊 RSI at ${rsi.toFixed(1)} shows oversold conditions (below 35).`);
+                detailedAnalysis.push(`📉 Price is within 5% of support level (${formatPrice(support)}). Support levels often act as bounce zones.`);
+                confidence += 0.15;
+                signal = 'BUY';
+            }
+
+            // ========== SELL CONDITIONS (Matching Sentinel) ==========
+            
+            // Condition 1: RSI overbought (> 75)
+            if (rsi > 75) {
+                reasons = [`RSI overbought (${rsi.toFixed(1)})`];
+                detailedAnalysis = [`📊 RSI at ${rsi.toFixed(1)} is OVERBOUGHT (above 75). Buyers are exhausted - high probability of pullback or reversal.`];
+                confidence = 0.5 + 0.2;
+                signal = 'SELL';
+            }
+            // Condition 2: RSI high (> 65) AND price near resistance
+            else if (rsi > 65 && currentPrice >= resistance * 0.95) {
+                reasons = [`RSI high (${rsi.toFixed(1)})`, 'Price near resistance'];
+                detailedAnalysis = [
+                    `📊 RSI at ${rsi.toFixed(1)} is elevated (above 65).`,
+                    `📈 Price is within 5% of resistance (${formatPrice(resistance)}). Resistance levels often trigger profit-taking.`
+                ];
+                confidence = 0.5 + 0.15;
+                signal = 'SELL';
+            }
+
+            // ========== MENTION VELOCITY BOOST (Alpha Tracker addition) ==========
+            const mentions = coin.mentionHistory?.slice(-6).map(m => m.count) || [];
+            const recentMentions = mentions.slice(-3).reduce((a, b) => a + b, 0);
+            const previousMentions = mentions.slice(0, 3).reduce((a, b) => a + b, 0);
+            
+            if (signal === 'BUY' && previousMentions > 0) {
+                const mentionVelocity = (recentMentions / previousMentions) - 1;
+                if (mentionVelocity > 0.5) {
+                    confidence += 0.1;
+                    reasons.push(`Mention velocity +${(mentionVelocity * 100).toFixed(0)}%`);
+                    detailedAnalysis.push(`🔥 Moltbook mentions increased ${(mentionVelocity * 100).toFixed(0)}% - rising social interest often precedes price moves.`);
+                }
+            }
+            
+            // Add context to analysis
+            if (signal) {
+                detailedAnalysis.push(`💰 Current price: ${formatPrice(currentPrice)}`);
+                detailedAnalysis.push(`📏 Support: ${formatPrice(support)} | Resistance: ${formatPrice(resistance)}`);
+                if (priceChange24h !== 0) {
+                    detailedAnalysis.push(`📈 24h change: ${priceChange24h >= 0 ? '+' : ''}${priceChange24h.toFixed(1)}%`);
+                }
+                detailedAnalysis.push(`⚡ Volatility: ${avgVolatility.toFixed(2)}% avg per period`);
+            }
+
+            // Cap confidence
+            confidence = Math.min(0.95, confidence);
+
+            if (signal) {
+                const signalObj = {
+                    type: signal,
+                    price: currentPrice,
+                    timestamp: new Date().toISOString(),
+                    confidence: Math.round(confidence * 100) / 100,
+                    reason: reasons.join('; '),
+                    reasons: reasons,
+                    detailedAnalysis: detailedAnalysis,
+                    rsi: Math.round(rsi * 10) / 10,
+                    support: support,
+                    resistance: resistance,
+                    priceChange24h: priceChange24h,
+                    volatility: avgVolatility,
+                    // Paper trading fields
+                    paperTrade: signal === 'BUY' ? {
+                        invested: PAPER_TRADE_AMOUNT,
+                        shares: PAPER_TRADE_AMOUNT / currentPrice,
+                        entryPrice: currentPrice,
+                        currentValue: PAPER_TRADE_AMOUNT,
+                        pnl: 0,
+                        pnlPercent: 0
+                    } : null
+                };
+                signalHistory[coin.symbol].push(signalObj);
+                console.log(`🚨 SIGNAL: ${signal} ${coin.symbol} @ ${formatPrice(currentPrice)} (conf: ${signalObj.confidence}) - ${reasons.join(', ')}`);
+            }
+        }
+        
+        // Update paper trade P&L for all signals
+        function updatePaperTrades() {
+            for (const symbol in signalHistory) {
+                const coin = trackedCoins.find(c => c.symbol === symbol);
+                if (!coin) continue;
+                
+                for (const signal of signalHistory[symbol]) {
+                    if (signal.type === 'BUY' && signal.paperTrade) {
+                        const currentValue = signal.paperTrade.shares * coin.currentPrice;
+                        signal.paperTrade.currentValue = currentValue;
+                        signal.paperTrade.pnl = currentValue - signal.paperTrade.invested;
+                        signal.paperTrade.pnlPercent = ((currentValue / signal.paperTrade.invested) - 1) * 100;
+                    }
+                }
+            }
+        }
+
+        // Auto-populate 20 slots with newest meme coins
+        async function discoverNewTokens(moltbookData) {
+            const pumps = moltbookData.pumps || {};
+            const trackedSymbols = new Set(trackedCoins.map(c => c.symbol.toUpperCase()));
+
+            // Sort pumps by age (newest first) then by mentions
+            const sortedPumps = Object.entries(pumps)
+                .map(([symbol, pump]) => ({ symbol, ...pump }))
+                .sort((a, b) => {
+                    const ageA = a.age_hours || 999;
+                    const ageB = b.age_hours || 999;
+                    if (ageA !== ageB) return ageA - ageB; // Newest first
+                    return (b.mention_count || 0) - (a.mention_count || 0); // Then by mentions
+                });
+
+            for (const pump of sortedPumps) {
+                if (trackedCoins.length >= MAX_SLOTS) break;
+                
+                const symbol = pump.symbol.toUpperCase();
+                if (trackedSymbols.has(symbol)) continue;
+
+                // Less strict criteria - just need price data
+                const price = pump.price?.current || 0;
+                const liquidity = pump.price?.liquidity || pump.liquidity || 0;
+
+                if (price > 0) {
+                    const age = pump.age_hours || 0;
+                    const newCoin = {
+                        symbol: symbol,
+                        entryPrice: price,
+                        currentPrice: price,
+                        ath: price,
+                        atl: price,
+                        liquidity: liquidity,
+                        age: age > 0 ? `${age.toFixed(0)}h` : 'NEW',
+                        isNew: true,
+                        discoveredAt: new Date().toISOString(),
+                        priceHistory: [{
+                            price: price,
+                            timestamp: new Date().toISOString()
+                        }],
+                        mentionHistory: [{
+                            count: pump.mention_count || 0,
+                            timestamp: new Date().toISOString()
+                        }],
+                        totalMentions: pump.mention_count || 0,
+                        source: 'moltbook_auto'
+                    };
+
+                    trackedCoins.push(newCoin);
+                    trackedSymbols.add(symbol);
+                    signalHistory[symbol] = [];
+                    console.log(`Auto-discovered: $${symbol} (age: ${newCoin.age}, mentions: ${pump.mention_count || 0})`);
+                }
+            }
+
+            // If we still don't have 20, try to fetch more from API
+            if (trackedCoins.length < MAX_SLOTS) {
+                await fetchMoreTokens(trackedSymbols);
+            }
+
+            saveStateToServer();
+        }
+        
+        // Fetch additional tokens to fill slots - uses DexScreener for newest Solana meme coins
+        async function fetchMoreTokens(existingSymbols) {
+            // Skip the old ngrok pumps API - go straight to DexScreener discovery
+            if (trackedCoins.length < MAX_SLOTS) {
+                await fetchDexScreenerNewTokens(existingSymbols);
+            }
+        }
+        
+        // Fetch newest Solana meme coins from DexScreener
+        async function fetchDexScreenerNewTokens(existingSymbols) {
+            console.log('Fetching newest tokens from DexScreener...');
+            
+            // Search for meme coin terms to find newest tokens
+            const searchTerms = [
+                'pepe', 'doge', 'shib', 'bonk', 'wif', 'popcat', 'mew', 
+                'ai', 'trump', 'elon', 'cat', 'dog', 'frog', 'moon',
+                'grok', 'ape', 'punk', 'wojak', 'chad', 'based',
+                'sol', 'pump', 'meme', 'king', 'baby', 'mini', 'inu'
+            ];
+            
+            for (const term of searchTerms) {
+                if (trackedCoins.length >= MAX_SLOTS) break;
+                
+                try {
+                    const resp = await fetch(`/api/dex?endpoint=search&q=${term}`);
+                    
+                    if (!resp.ok) continue;
+                    const data = await resp.json();
+                    const pairs = data.pairs || [];
+                    
+                    // Filter for Solana, new tokens, with liquidity
+                    const solanaPairs = pairs
+                        .filter(p => p.chainId === 'solana')
+                        .filter(p => {
+                            const created = p.pairCreatedAt;
+                            if (!created) return false;
+                            const ageHours = (Date.now() - created) / (1000 * 60 * 60);
+                            return ageHours <= 168; // Less than 7 days old
+                        })
+                        .filter(p => (p.liquidity?.usd || 0) >= 1000)
+                        .slice(0, 5); // Take top 5 per search
+                    
+                    for (const pair of solanaPairs) {
+                        if (trackedCoins.length >= MAX_SLOTS) break;
+                        
+                        const sym = pair.baseToken?.symbol?.toUpperCase();
+                        if (!sym || existingSymbols.has(sym)) continue;
+                        if (sym.length > 10 || sym.length < 2) continue; // Skip weird symbols
+                        
+                        const price = parseFloat(pair.priceUsd) || 0;
+                        if (price <= 0) continue;
+                        
+                        const ageHours = pair.pairCreatedAt ? 
+                            (Date.now() - pair.pairCreatedAt) / (1000 * 60 * 60) : 0;
+                        
+                        const newCoin = {
+                            symbol: sym,
+                            entryPrice: price,
+                            currentPrice: price,
+                            ath: price,
+                            atl: price,
+                            liquidity: pair.liquidity?.usd || 0,
+                            age: ageHours > 0 ? `${Math.round(ageHours)}h` : 'NEW',
+                            isNew: true,
+                            discoveredAt: new Date().toISOString(),
+                            priceHistory: [{ price, timestamp: new Date().toISOString() }],
+                            mentionHistory: [{ count: 0, timestamp: new Date().toISOString() }],
+                            totalMentions: 0,
+                            source: 'dexscreener',
+                            pairAddress: pair.pairAddress,
+                            tokenAddress: pair.baseToken?.address
+                        };
+                        
+                        trackedCoins.push(newCoin);
+                        existingSymbols.add(sym);
+                        signalHistory[sym] = [];
+                        console.log(`Added from DexScreener: $${sym} (${newCoin.age} old, $${newCoin.liquidity.toLocaleString()} liq)`);
+                    }
+                    
+                    // Small delay to not hammer API
+                    await new Promise(r => setTimeout(r, 300));
+                    
+                } catch (e) {
+                    console.log(`DexScreener search failed for "${term}":`, e);
+                }
+            }
+            
+            // If still need more, try the boosted/trending endpoint
+            if (trackedCoins.length < MAX_SLOTS) {
+                try {
+                    console.log('Trying DexScreener boosted tokens...');
+                    const resp = await fetch('https://api.dexscreener.com/token-boosts/top/v1');
+                    if (resp.ok) {
+                        const tokens = await resp.json();
+                        for (const token of (tokens || []).slice(0, 30)) {
+                            if (trackedCoins.length >= MAX_SLOTS) break;
+                            if (token.chainId !== 'solana') continue;
+                            
+                            const sym = token.tokenAddress ? token.symbol?.toUpperCase() : null;
+                            if (!sym || existingSymbols.has(sym)) continue;
+                            
+                            // Fetch full pair data
+                            try {
+                                const pairResp = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${token.tokenAddress}`);
+                                if (pairResp.ok) {
+                                    const pairData = await pairResp.json();
+                                    const pair = pairData.pairs?.[0];
+                                    if (pair) {
+                                        const price = parseFloat(pair.priceUsd) || 0;
+                                        if (price > 0) {
+                                            const ageHours = pair.pairCreatedAt ? 
+                                                (Date.now() - pair.pairCreatedAt) / (1000 * 60 * 60) : 0;
+                                            
+                                            const newCoin = {
+                                                symbol: sym,
+                                                entryPrice: price,
+                                                currentPrice: price,
+                                                ath: price,
+                                                atl: price,
+                                                liquidity: pair.liquidity?.usd || 0,
+                                                age: ageHours > 0 ? `${Math.round(ageHours)}h` : '?',
+                                                isNew: true,
+                                                discoveredAt: new Date().toISOString(),
+                                                priceHistory: [{ price, timestamp: new Date().toISOString() }],
+                                                mentionHistory: [{ count: 0, timestamp: new Date().toISOString() }],
+                                                totalMentions: 0,
+                                                source: 'dexscreener_boosted',
+                                                tokenAddress: token.tokenAddress
+                                            };
+                                            
+                                            trackedCoins.push(newCoin);
+                                            existingSymbols.add(sym);
+                                            signalHistory[sym] = [];
+                                            console.log(`Added boosted: $${sym}`);
+                                        }
+                                    }
+                                }
+                                await new Promise(r => setTimeout(r, 200));
+                            } catch (e) {}
+                        }
+                    }
+                } catch (e) {
+                    console.log('Boosted tokens fetch failed:', e);
+                }
+            }
+            
+            console.log(`Total coins after DexScreener fetch: ${trackedCoins.length}`);
+        }
+
+        // Add token manually
+        function addToken() {
+            if (trackedCoins.length >= MAX_SLOTS) {
+                alert('All 20 slots are full. Remove a token first.');
+                return;
+            }
+
+            const symbol = prompt('Enter token symbol (e.g., PEPE):');
+            if (!symbol) return;
+
+            const cleanSymbol = symbol.toUpperCase().replace('$', '');
+            if (trackedCoins.find(c => c.symbol === cleanSymbol)) {
+                alert('Token already being tracked.');
+                return;
+            }
+
+            const entryPrice = parseFloat(prompt('Enter current price (entry price):') || '0');
+            const liquidity = parseFloat(prompt('Enter liquidity in USD:') || '0');
+
+            const newCoin = {
+                symbol: cleanSymbol,
+                entryPrice: entryPrice,
+                currentPrice: entryPrice,
+                ath: entryPrice,
+                atl: entryPrice,
+                liquidity: liquidity,
+                age: 'NEW',
+                isNew: true,
+                discoveredAt: new Date().toISOString(),
+                priceHistory: [],
+                mentionHistory: [],
+                totalMentions: 0
+            };
+
+            trackedCoins.push(newCoin);
+            signalHistory[cleanSymbol] = [];
+            saveStateToServer();
+            
+            renderGrid();
+            updateStats();
+        }
+
+        // Clear a slot
+        function clearSlot() {
+            const symbol = prompt('Enter symbol to remove:');
+            if (!symbol) return;
+
+            const cleanSymbol = symbol.toUpperCase().replace('$', '');
+            const idx = trackedCoins.findIndex(c => c.symbol === cleanSymbol);
+            
+            if (idx === -1) {
+                alert('Token not found.');
+                return;
+            }
+
+            if (confirm(`Remove $${cleanSymbol} and all its data?`)) {
+                trackedCoins.splice(idx, 1);
+                delete signalHistory[cleanSymbol];
+                saveStateToServer();
+                renderGrid();
+                updateStats();
+            }
+        }
+
+        // Export data
+        function exportData() {
+            const data = {
+                experimentStart: experimentStart,
+                exportedAt: new Date().toISOString(),
+                trackedCoins: trackedCoins,
+                signalHistory: signalHistory,
+                stats: {
+                    totalTracked: trackedCoins.length,
+                    daysRunning: Math.floor((Date.now() - new Date(experimentStart).getTime()) / (1000 * 60 * 60 * 24))
+                }
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `moltbook-alpha-export-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Reset entire experiment
+        async function resetExperiment() {
+            if (!confirm('⚠️ This will DELETE all tracked coins and signal history. Are you sure?')) return;
+            if (!confirm('Really? All data will be lost. Type "RESET" mentally and click OK.')) return;
+            
+            trackedCoins = [];
+            signalHistory = {};
+            experimentStart = new Date().toISOString();
+            avgReturnHistory = [];
+            
+            // Save empty state to server
+            await saveStateToServer();
+            
+            // Clear zoom states
+            Object.keys(chartZoomState).forEach(k => delete chartZoomState[k]);
+            
+            renderGrid();
+            updateStats();
+            
+            // Immediately try to populate
+            loadData();
+            
+            alert('Experiment reset! Auto-populating with newest coins...');
+        }
+        
+        // Force refresh now
+        async function forceRefresh() {
+            document.getElementById('lastUpdate').textContent = 'Refreshing...';
+            await loadData();
+        }
+
+        // Tooltip handling - detailed analysis on hover
+        document.addEventListener('mouseover', (e) => {
+            const signalFlag = e.target.closest('.signal-flag');
+            if (signalFlag && signalFlag.dataset.signal) {
+                const signal = JSON.parse(signalFlag.dataset.signal);
+                const tooltip = document.getElementById('tooltip');
+                
+                // Build detailed tooltip
+                let paperTradeHtml = '';
+                if (signal.type === 'BUY' && signal.paperTrade) {
+                    const pt = signal.paperTrade;
+                    const pnlColor = pt.pnl >= 0 ? 'var(--green)' : 'var(--red)';
+                    paperTradeHtml = `
+                        <div style="background: var(--bg-secondary); border-radius: 6px; padding: 0.5rem; margin-top: 0.5rem; border-left: 3px solid var(--gold);">
+                            <div style="font-size: 0.65rem; color: var(--gold); margin-bottom: 0.25rem;">📊 PAPER TRADE ($${pt.invested})</div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem; font-size: 0.7rem;">
+                                <div>Entry: ${formatPrice(pt.entryPrice)}</div>
+                                <div>Shares: ${pt.shares.toFixed(0)}</div>
+                                <div>Value: <span style="color: ${pnlColor}">$${pt.currentValue.toFixed(2)}</span></div>
+                                <div>P&L: <span style="color: ${pnlColor}">${pt.pnl >= 0 ? '+' : ''}$${pt.pnl.toFixed(2)} (${pt.pnlPercent >= 0 ? '+' : ''}${pt.pnlPercent.toFixed(1)}%)</span></div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Detailed analysis
+                const analysisHtml = signal.detailedAnalysis ? 
+                    signal.detailedAnalysis.map(a => `<div style="margin-bottom: 0.3rem;">• ${a}</div>`).join('') :
+                    `<div>${signal.reason}</div>`;
+                
+                tooltip.innerHTML = `
+                    <div style="font-weight: bold; font-size: 1rem; color: ${signal.type === 'BUY' ? 'var(--green)' : 'var(--red)'}; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+                        ${signal.type === 'BUY' ? '🟢' : '🔴'} ${signal.type} SIGNAL
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 0.75rem;">
+                        <div><span style="color: var(--text-dim);">Price:</span> ${formatPrice(signal.price)}</div>
+                        <div><span style="color: var(--text-dim);">RSI:</span> <span style="${signal.rsi < 30 ? 'color: var(--green)' : signal.rsi > 70 ? 'color: var(--red)' : ''}">${signal.rsi}</span></div>
+                        <div><span style="color: var(--text-dim);">Time:</span> ${new Date(signal.timestamp).toLocaleString()}</div>
+                        <div><span style="color: var(--text-dim);">Confidence:</span> <span style="color: var(--gold)">${Math.round(signal.confidence * 100)}%</span></div>
+                    </div>
+                    <div style="background: rgba(0,188,212,0.1); border-radius: 6px; padding: 0.5rem; margin-top: 0.5rem;">
+                        <div style="font-size: 0.65rem; color: var(--cyan); margin-bottom: 0.5rem; font-weight: bold;">💡 WHY THIS SIGNAL?</div>
+                        <div style="font-size: 0.7rem; color: var(--text-secondary); line-height: 1.4;">
+                            ${analysisHtml}
+                        </div>
+                    </div>
+                    ${paperTradeHtml}
+                `;
+                
+                // Position tooltip
+                const rect = e.target.getBoundingClientRect();
+                let left = e.clientX + 15;
+                let top = e.clientY + 15;
+                
+                // Keep in viewport
+                if (left + 320 > window.innerWidth) left = e.clientX - 330;
+                if (top + 400 > window.innerHeight) top = Math.max(10, window.innerHeight - 410);
+                
+                tooltip.style.left = `${left}px`;
+                tooltip.style.top = `${top}px`;
+                tooltip.style.maxWidth = '320px';
+                tooltip.classList.add('show');
+            }
+        });
+
+        document.addEventListener('mouseout', (e) => {
+            if (e.target.closest('.signal-flag')) {
+                document.getElementById('tooltip').classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
