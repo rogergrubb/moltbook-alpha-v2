@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "routes": [
+    { "src": "/api/state", "dest": "/api/state.js" },
+    { "src": "/api/dex", "dest": "/api/dex.js" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ],
+  "functions": {
+    "api/state.js": { "maxDuration": 10 },
+    "api/dex.js": { "maxDuration": 10 }
+  }
+}
