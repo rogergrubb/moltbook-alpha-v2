@@ -551,6 +551,26 @@
                 gap: 1rem;
             }
         }
+        .coin-address {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--gold);
+            cursor: pointer;
+            padding: 2px 6px;
+            background: rgba(240, 185, 11, 0.1);
+            border-radius: 4px;
+            margin-top: 4px;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+        .coin-address:hover {
+            background: rgba(240, 185, 11, 0.25);
+            color: #fff;
+        }
+        .coin-address.copied {
+            background: var(--green);
+            color: #000;
+        }
     </style>
 </head>
 <body>
@@ -739,6 +759,20 @@
     <div class="tooltip" id="tooltip"></div>
 
     <script>
+        // Copy contract address to clipboard
+        function copyAddress(address) {
+            navigator.clipboard.writeText(address).then(() => {
+                // Visual feedback
+                event.target.classList.add('copied');
+                const originalText = event.target.textContent;
+                event.target.textContent = 'Copied! ✓';
+                setTimeout(() => {
+                    event.target.classList.remove('copied');
+                    event.target.textContent = originalText;
+                }, 1500);
+                console.log('📋 Copied address:', address);
+            });
+        }
         // Configuration
         const API_BASE = ''; // Self-hosted on Vercel - no ngrok needed
         const REFRESH_INTERVAL = 30000; // 30 seconds - 75% of DexScreener rate limit
@@ -1193,6 +1227,7 @@
                             <div>
                                 <div class="coin-name">$${coin.symbol}</div>
                                 <div class="coin-meta">Age: ${coin.age || 'NEW'} | Liq: $${formatLiquidity(coin.liquidity)}</div>
+                                ${coin.tokenAddress ? `<div class="coin-address" onclick="copyAddress('${coin.tokenAddress}')" title="Click to copy">${coin.tokenAddress.slice(0,6)}...${coin.tokenAddress.slice(-4)} 📋</div>` : '<div class="coin-address" style="color:var(--red)">No address</div>'}
                             </div>
                         </div>
                         <div class="coin-price">
@@ -1906,6 +1941,8 @@
             if (signal) {
                 const signalObj = {
                     type: signal,
+                    symbol: coin.symbol,
+                    tokenAddress: coin.tokenAddress || null,
                     price: currentPrice,
                     timestamp: new Date().toISOString(),
                     confidence: Math.round(confidence * 100) / 100,
@@ -1917,6 +1954,7 @@
                     resistance: resistance,
                     priceChange24h: priceChange24h,
                     volatility: avgVolatility,
+                    liquidity: coin.liquidity || 0,
                     // Paper trading fields
                     paperTrade: signal === 'BUY' ? {
                         invested: PAPER_TRADE_AMOUNT,
@@ -1928,7 +1966,7 @@
                     } : null
                 };
                 signalHistory[coin.symbol].push(signalObj);
-                console.log(`🚨 SIGNAL: ${signal} ${coin.symbol} @ ${formatPrice(currentPrice)} (conf: ${signalObj.confidence}) - ${reasons.join(', ')}`);
+                console.log(`🚨 SIGNAL: ${signal} ${coin.symbol} @ ${formatPrice(currentPrice)} (conf: ${signalObj.confidence}) | CA: ${coin.tokenAddress || 'N/A'}`);
             }
         }
         
